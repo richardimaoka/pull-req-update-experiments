@@ -2,16 +2,27 @@ package main
 
 import "fmt"
 
-func abcText(filename string) string {
-	return fmt.Sprintf(`cat << EOF > %s.txt
+type Command struct {
+	command string
+}
+
+func genAbcFile(filename string) Command {
+	commandString := fmt.Sprintf(
+`cat << EOF > %s.txt
 a
 
 b
 
 c
 EOF`, filename)
+
+	return Command{
+		command: commandString
+	}
 }
 
 func main() {
+	var commands []Command
+	commands = append(commands, genAbcFile())
 	fmt.Println(abcText("pull-req-update-commit"))
 }

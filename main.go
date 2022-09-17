@@ -6,23 +6,22 @@ type Command struct {
 	command string
 }
 
-func genAbcFile(filename string) Command {
-	commandString := fmt.Sprintf(
-`cat << EOF > %s.txt
+func genAbcFile(filename string) string {
+	return fmt.Sprintf(
+		`cat << EOF > %s
 a
 
 b
 
 c
 EOF`, filename)
-
-	return Command{
-		command: commandString
-	}
 }
 
 func main() {
 	var commands []Command
-	commands = append(commands, genAbcFile())
-	fmt.Println(abcText("pull-req-update-commit"))
+	filename := "pull-req-update-commit.txt"
+	commands = append(commands, Command{command: genAbcFile(filename)})
+	commands = append(commands, Command{command: "git add --all"})
+	commands = append(commands, Command{command: fmt.Sprintf(`git commit -m "%s"`, filename)})
+	fmt.Println(commands)
 }

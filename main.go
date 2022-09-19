@@ -40,6 +40,8 @@ func main() {
 	commands = append(commands, Command{Command: fmt.Sprintf(`sed -i 's/a/aaaaa/' %s # ファイル中のaをaaaaaに置き換え`, filename)})
 	commands = append(commands, Command{Command: "git add --all"})
 	commands = append(commands, Command{Command: fmt.Sprintf(`git commit -m "%s"`, filename)})
+	commands = append(commands, Command{Command: fmt.Sprintf(`git push --set-upstream origin "%s"`, pr1branch)})
+	commands = append(commands, Command{Command: fmt.Sprintf(`gh pr create --title %s --body "" --base %s --head %s`, pr1branch, mainBranch, pr1branch)})
 
 	// bytes, err := json.Marshal(commands)
 

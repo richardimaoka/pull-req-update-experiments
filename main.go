@@ -58,7 +58,7 @@ func WriteMarkdown(w io.Writer, cmdBlocks []fmt.Stringer) {
 			commands = append(commands, v.Commands...)
 		}
 
-		fmt.Fprintln(w, "```:コピペして実行")
+		fmt.Fprintln(w, "```sh:コピペして実行")
 		for _, cmdString := range commands {
 			fmt.Fprintln(w, cmdString)
 		}
@@ -105,21 +105,21 @@ func main() {
 	var commands []fmt.Stringer
 	f := fmt.Sprintf
 
-	// commands = append(commands, &MultiCommands{
-	// 	Comment: "準備: GitHub レポジトリの作成",
-	// 	Commands: []string{
-	// 		"mkdir pull-req-update-experiments",
-	// 		"cd pull-req-update-experiments",
-	// 		"git init",
-	// 	},
-	// })
+	commands = append(commands, &MultiCommands{
+		Comment: "準備: GitHub レポジトリの作成",
+		Commands: []string{
+			"mkdir pull-req-update-experiments",
+			"cd pull-req-update-experiments",
+			"git init",
+		},
+	})
 
-	// commands = append(commands, &SingleCommand{
-	// 	Comment: "GitHub repository create",
-	// 	Command: "gh repo create pull-req-update-experiments --public --source=. --remote=origin",
-	// })
+	commands = append(commands, &SingleCommand{
+		Comment: "GitHub repository create",
+		Command: "gh repo create pull-req-update-experiments --public --source=. --remote=origin",
+	})
 
-	mainBranch := "developer"
+	mainBranch := "main"
 	if mainBranch != "main" {
 		commands = append(commands, &SingleCommand{
 			Command: f("git branch -f %s", mainBranch),

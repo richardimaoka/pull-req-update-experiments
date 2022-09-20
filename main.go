@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 type SingleCommand struct {
@@ -50,6 +52,30 @@ func WriteShellScript(w io.Writer, commands []fmt.Stringer) {
 	fmt.Fprint(w, "#!/bin/sh\n\n")
 	for _, cmd := range commands {
 		fmt.Fprintf(w, "%v\n\n", cmd.String())
+	}
+}
+
+func RunCommands(commands []fmt.Stringer) {
+	input := bufio.NewScanner(os.Stdin)
+
+	for _, cmd := range commands {
+		fmt.Println("### Executing the following command ###")
+		fmt.Println(cmd.String())
+		fmt.Print("[y/n] ")
+
+		for input.Scan() {
+			switch text := input.Text(); text {
+			case "y":
+				fmt.Println("executing")
+				break
+			case "n":
+				fmt.Println("skipped")
+				break
+			default:
+				fmt.Print("[y/n] ")
+			}
+		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
@@ -154,5 +180,6 @@ func main() {
 	})
 	// bytes, err := json.Marshal(commands)
 
-	WriteShellScript(os.Stdout, commands)
+	RunCommands(commands)
+	//WriteShellScript(os.Stdout, commands)
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -42,6 +44,13 @@ b
 
 c
 EOF`, filename)
+}
+
+func WriteShellScript(w io.Writer, commands []fmt.Stringer) {
+	fmt.Fprint(w, "#!/bin/sh\n\n")
+	for _, cmd := range commands {
+		fmt.Fprintf(w, "%v\n\n", cmd.String())
+	}
 }
 
 func main() {
@@ -145,8 +154,5 @@ func main() {
 	})
 	// bytes, err := json.Marshal(commands)
 
-	fmt.Printf("#!/bin/sh\n\n")
-	for _, cmd := range commands {
-		fmt.Printf("%v\n\n", cmd.String())
-	}
+	WriteShellScript(os.Stdout, commands)
 }

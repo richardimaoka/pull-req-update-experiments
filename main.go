@@ -15,7 +15,7 @@ func (c *SingleCommand) String() string {
 	if c.Comment == "" {
 		return c.Command
 	} else {
-		return c.Comment + "\n" + c.Command
+		return "# " + c.Comment + "\n" + c.Command
 	}
 }
 
@@ -29,7 +29,7 @@ func (c *MultiCommands) String() string {
 	if c.Comment == "" {
 		return strings.Join(c.Commands, "\n")
 	} else {
-		return c.Comment + "\n" + strings.Join(c.Commands, "\n")
+		return "# " + c.Comment + "\n" + strings.Join(c.Commands, "\n")
 	}
 }
 
@@ -48,7 +48,7 @@ func main() {
 	var commands []fmt.Stringer
 
 	commands = append(commands, &MultiCommands{
-		Comment: "# 準備: GitHub レポジトリの作成",
+		Comment: "準備: GitHub レポジトリの作成",
 		Commands: []string{
 			"mkdir pull-req-update-experiments",
 			"cd pull-req-update-experiments",
@@ -57,14 +57,14 @@ func main() {
 	})
 
 	commands = append(commands, &SingleCommand{
-		Comment: "# GitHub repository create",
+		Comment: "GitHub repository create",
 		Command: "gh repo create pull-req-update-experiments --public --source=. --remote=origin",
 	})
 
 	mainBranch := "developer"
 	filename := "pull-req-no-conflict.txt"
 	commands = append(commands, &MultiCommands{
-		Comment: "# 準備: GitHub テキストファイルの作成",
+		Comment: "準備: GitHub テキストファイルの作成",
 		Commands: []string{
 			fmt.Sprintf(`git switch %s`, mainBranch),
 			genAbcFile(filename),
@@ -82,7 +82,7 @@ func main() {
 			fmt.Sprintf(`sed -i 's/a/aaaaa/' %s # ファイル中のaをaaaaaに置き換え`, filename),
 			"git add --all",
 			fmt.Sprintf(`git commit -m "update a in %s"`, pr1branch),
-			fmt.Sprintf(`git push --set-upstream origin "%s"`, pr1branch),
+			fmt.Sprintf(`git push --set-upstream origin %s`, pr1branch),
 			fmt.Sprintf(`gh pr create --title %s --body "" --base %s --head %s`, pr1branch, mainBranch, pr1branch),
 		},
 	})

@@ -68,8 +68,11 @@ func RunCommands(commands []fmt.Stringer) {
 		case "y":
 			fmt.Println("executing")
 			execCmd := exec.Command("sh", "-c", cmd.String())
-			output, _ := execCmd.CombinedOutput()
-			fmt.Println(output)
+			output, err := execCmd.CombinedOutput()
+			if err != nil {
+				fmt.Printf("ERROR: %s\n", err)
+			}
+			fmt.Println(string(output))
 		case "n":
 			fmt.Println("skipping")
 		default:
@@ -96,6 +99,12 @@ func main() {
 	// })
 
 	mainBranch := "developer"
+	if mainBranch != "main" {
+		commands = append(commands, &SingleCommand{
+			Command: fmt.Sprintf("git branch -f %s", mainBranch),
+		})
+	}
+
 	filename := "pull-req-no-conflict.txt"
 	commands = append(commands, &MultiCommands{
 		Comment: "準備: GitHub テキストファイルの作成",

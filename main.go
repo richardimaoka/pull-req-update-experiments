@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -66,6 +67,9 @@ func RunCommands(commands []fmt.Stringer) {
 		switch text := input.Text(); text {
 		case "y":
 			fmt.Println("executing")
+			execCmd := exec.Command("sh", "-c", cmd.String())
+			output, _ := execCmd.CombinedOutput()
+			fmt.Println(output)
 		case "n":
 			fmt.Println("skipping")
 		default:

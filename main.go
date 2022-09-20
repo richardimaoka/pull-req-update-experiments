@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -55,25 +56,37 @@ func WriteShellScript(w io.Writer, commands []fmt.Stringer) {
 	}
 }
 
-func RunCommands(commands []fmt.Stringer) {
+func RunCommands(cmdBlocks []fmt.Stringer) {
 	input := bufio.NewScanner(os.Stdin)
 
-	for _, cmd := range commands {
-		fmt.Println("### Executing the following command ###")
-		fmt.Println(cmd.String())
-		fmt.Print("[y/n] ")
-
-		input.Scan()
-		switch text := input.Text(); text {
-		case "y":
-			fmt.Println("executing")
-			execCmd := exec.Command("sh", "-c", cmd.String())
-			output, _ := execCmd.CombinedOutput()
-			fmt.Println(output)
-		case "n":
-			fmt.Println("skipping")
+	for _, cmdBlk := range cmdBlocks {
+		var commands []string
+		switch v := cmdBlk.(type) {
+		case *SingleCommand:
+			commands = append(commands, v.Command)
+		case *MultiCommands:
+			commands = append(commands, v.Commands...)
 		default:
+			log.Fatalf("cannot be true!!!")
+		}
+
+		for _, cmdString := range commands {
+			fmt.Println("### Executing the following command ###")
+			fmt.Println(cmdString)
 			fmt.Print("[y/n] ")
+
+			input.Scan()
+			switch text := input.Text(); text {
+			case "y":
+				fmt.Println("executing")
+				execCmd := exec.Command("sh", "-c", cmdString)
+				output, _ := execCmd.CombinedOutput()
+				fmt.Println(output)
+			case "n":
+				fmt.Println("skipping")
+			default:
+				fmt.Print("[y/n] ")
+			}
 		}
 	}
 }

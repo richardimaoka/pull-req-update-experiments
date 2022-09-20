@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"time"
 )
 
 type SingleCommand struct {
@@ -63,38 +62,34 @@ func RunCommands(commands []fmt.Stringer) {
 		fmt.Println(cmd.String())
 		fmt.Print("[y/n] ")
 
-		for input.Scan() {
-			switch text := input.Text(); text {
-			case "y":
-				fmt.Println("executing")
-				break
-			case "n":
-				fmt.Println("skipped")
-				break
-			default:
-				fmt.Print("[y/n] ")
-			}
+		input.Scan()
+		switch text := input.Text(); text {
+		case "y":
+			fmt.Println("executing")
+		case "n":
+			fmt.Println("skipping")
+		default:
+			fmt.Print("[y/n] ")
 		}
-		time.Sleep(1 * time.Second)
 	}
 }
 
 func main() {
 	var commands []fmt.Stringer
 
-	commands = append(commands, &MultiCommands{
-		Comment: "準備: GitHub レポジトリの作成",
-		Commands: []string{
-			"mkdir pull-req-update-experiments",
-			"cd pull-req-update-experiments",
-			"git init",
-		},
-	})
+	// commands = append(commands, &MultiCommands{
+	// 	Comment: "準備: GitHub レポジトリの作成",
+	// 	Commands: []string{
+	// 		"mkdir pull-req-update-experiments",
+	// 		"cd pull-req-update-experiments",
+	// 		"git init",
+	// 	},
+	// })
 
-	commands = append(commands, &SingleCommand{
-		Comment: "GitHub repository create",
-		Command: "gh repo create pull-req-update-experiments --public --source=. --remote=origin",
-	})
+	// commands = append(commands, &SingleCommand{
+	// 	Comment: "GitHub repository create",
+	// 	Command: "gh repo create pull-req-update-experiments --public --source=. --remote=origin",
+	// })
 
 	mainBranch := "developer"
 	filename := "pull-req-no-conflict.txt"

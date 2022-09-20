@@ -9,7 +9,7 @@
 # gh repo create pull-req-update-experiments --public --source=. --remote=origin
 
 # 準備: GitHub テキストファイルの作成
-git switch developer
+git switch -c developer
 cat << EOF > pull-req-no-conflict.txt
 a
 

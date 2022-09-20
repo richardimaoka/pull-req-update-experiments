@@ -66,10 +66,7 @@ func RunCommands(cmdBlocks []fmt.Stringer) {
 			commands = append(commands, v.Command)
 		case *MultiCommands:
 			commands = append(commands, v.Commands...)
-		default:
-			log.Fatalf("cannot be true!!!")
-		}
-
+		
 		for _, cmdString := range commands {
 			fmt.Println("### Executing the following command ###")
 			fmt.Println(cmdString)
@@ -109,6 +106,12 @@ func main() {
 	// })
 
 	mainBranch := "developer"
+	if mainBranch != "main" {
+		commands = append(commands, &SingleCommand{
+			Command: fmt.Sprintf("git branch -f %s", mainBranch),
+		})
+	}
+
 	filename := "pull-req-no-conflict.txt"
 	commands = append(commands, &MultiCommands{
 		Comment: "準備: GitHub テキストファイルの作成",

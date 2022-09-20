@@ -38,7 +38,7 @@ func (c *MultiCommands) String() string {
 }
 
 func genAbcFile(filename string) string {
-	return f(
+	return fmt.Sprintf(
 		`cat << EOF > %s
 a
 
@@ -48,10 +48,21 @@ c
 EOF`, filename)
 }
 
-func WriteShellScript(w io.Writer, commands []fmt.Stringer) {
-	fmt.Fprint(w, "#!/bin/sh\n\n")
-	for _, cmd := range commands {
-		fmt.Fprintf(w, "%v\n\n", cmd.String())
+func WriteMarkdown(w io.Writer, cmdBlocks []fmt.Stringer) {
+	for _, cmdBlk := range cmdBlocks {
+		var commands []string
+		switch v := cmdBlk.(type) {
+		case *SingleCommand:
+			commands = append(commands, v.Command)
+		case *MultiCommands:
+			commands = append(commands, v.Commands...)
+		}
+
+		fmt.Fprintln(w, "```:コピペして実行")
+		for _, cmdString := range commands {
+			fmt.Fprintln(w, cmdString)
+		}
+		fmt.Fprint(w, "```\n\n")
 	}
 }
 
@@ -198,6 +209,13 @@ func main() {
 	})
 	// bytes, err := json.Marshal(commands)
 
+	file, err := os.Create("script.md")
+	if err != nil {
+		fmt.Println("ERROR: cannot open script.sh")
+	} else {
+		WriteMarkdown(file, commands)
+	}
+
 	RunCommands(commands)
-	//WriteShellScript(os.Stdout, commands)
+
 }

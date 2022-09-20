@@ -79,7 +79,7 @@ func RunCommands(cmdBlocks []fmt.Stringer) {
 				fmt.Println("executing")
 				execCmd := exec.Command("sh", "-c", cmdString)
 				output, _ := execCmd.CombinedOutput()
-				fmt.Println(output)
+				fmt.Println(string(output))
 			case "n":
 				fmt.Println("skipping")
 			default:

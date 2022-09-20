@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -66,23 +65,25 @@ func RunCommands(cmdBlocks []fmt.Stringer) {
 			commands = append(commands, v.Command)
 		case *MultiCommands:
 			commands = append(commands, v.Commands...)
-		
-		for _, cmdString := range commands {
-			fmt.Println("### Executing the following command ###")
-			fmt.Println(cmdString)
-			fmt.Print("[y/n] ")
 
-			input.Scan()
-			switch text := input.Text(); text {
-			case "y":
-				fmt.Println("executing")
-				execCmd := exec.Command("sh", "-c", cmdString)
-				output, _ := execCmd.CombinedOutput()
-				fmt.Println(output)
-			case "n":
-				fmt.Println("skipping")
-			default:
+			for _, cmdString := range commands {
+				fmt.Println("### Executing the following command ###")
+				fmt.Println(cmdString)
 				fmt.Print("[y/n] ")
+
+				input.Scan()
+				text := input.Text()
+				switch text {
+				case "y":
+					fmt.Println("executing")
+					execCmd := exec.Command("sh", "-c", cmdString)
+					output, _ := execCmd.CombinedOutput()
+					fmt.Println(output)
+				case "n":
+					fmt.Println("skipping")
+				default:
+					fmt.Print("[y/n] ")
+				}
 			}
 		}
 	}

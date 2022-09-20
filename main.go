@@ -74,21 +74,21 @@ func main() {
 		},
 	})
 
-	pr1branch := "pr-update-1"
+	prBranch := "pr-update-1"
 	commands = append(commands, &MultiCommands{
 		Comment: "Pull Request作成",
 		Commands: []string{
-			fmt.Sprintf(`git switch -c %s`, pr1branch),
+			fmt.Sprintf(`git switch -c %s`, prBranch),
 			fmt.Sprintf(`sed -i 's/a/aaaaa/' %s # ファイル中のaをaaaaaに置き換え`, filename),
 			"git add --all",
-			fmt.Sprintf(`git commit -m "update a in %s"`, pr1branch),
-			fmt.Sprintf(`git push --set-upstream origin %s`, pr1branch),
-			fmt.Sprintf(`gh pr create --title %s --body "" --base %s --head %s`, pr1branch, mainBranch, pr1branch),
+			fmt.Sprintf(`git commit -m "update a in %s"`, prBranch),
+			fmt.Sprintf(`git push --set-upstream origin %s`, prBranch),
+			fmt.Sprintf(`gh pr create --title %s --body "" --base %s --head %s`, prBranch, mainBranch, prBranch),
 		},
 	})
 
 	commands = append(commands, &MultiCommands{
-		Comment: fmt.Sprintf("%s ブランチにcommit", mainBranch),
+		Comment: fmt.Sprintf("%s ブランチに直接commit", mainBranch),
 		Commands: []string{
 			fmt.Sprintf(`git switch %s`, mainBranch),
 			fmt.Sprintf(`sed -i 's/b/bbbbb/' %s # ファイル中のbをbbbbbに置き換え`, filename),
@@ -98,6 +98,51 @@ func main() {
 		},
 	})
 
+	commands = append(commands, &SingleCommand{
+		Comment: "PRをマージ",
+		Command: fmt.Sprintf("gh pr merge %s --merge --delete-branch", prBranch),
+	})
+
+	filename = "pull-req-same-line-conflict.txt"
+	commands = append(commands, &MultiCommands{
+		Comment: "準備: GitHub テキストファイルの作成",
+		Commands: []string{
+			fmt.Sprintf(`git switch %s`, mainBranch),
+			genAbcFile(filename),
+			"git add --all",
+			fmt.Sprintf(`git commit -m "create %s"`, filename),
+			fmt.Sprintf(`git push origin %s`, mainBranch),
+		},
+	})
+
+	prBranch = "pr-update-2"
+	commands = append(commands, &MultiCommands{
+		Comment: "Pull Request作成",
+		Commands: []string{
+			fmt.Sprintf(`git switch -c %s`, prBranch),
+			fmt.Sprintf(`sed -i 's/a/aaaaa/' %s # ファイル中のaをaaaaaに置き換え`, filename),
+			"git add --all",
+			fmt.Sprintf(`git commit -m "update a to aaaaa in %s"`, prBranch),
+			fmt.Sprintf(`git push --set-upstream origin %s`, prBranch),
+			fmt.Sprintf(`gh pr create --title %s --body "" --base %s --head %s`, prBranch, mainBranch, prBranch),
+		},
+	})
+
+	commands = append(commands, &MultiCommands{
+		Comment: fmt.Sprintf("%s ブランチに直接commit", mainBranch),
+		Commands: []string{
+			fmt.Sprintf(`git switch %s`, mainBranch),
+			fmt.Sprintf(`sed -i 's/a/aaa/' %s # ファイル中のaをaaaに置き換え`, filename),
+			"git add --all",
+			fmt.Sprintf(`git commit -m "update a to aaa in %s"`, mainBranch),
+			fmt.Sprintf("git push origin %s", mainBranch),
+		},
+	})
+
+	commands = append(commands, &SingleCommand{
+		Comment: "PRをマージ",
+		Command: fmt.Sprintf("gh pr merge %s --merge --delete-branch", prBranch),
+	})
 	// bytes, err := json.Marshal(commands)
 
 	fmt.Printf("#!/bin/sh\n\n")

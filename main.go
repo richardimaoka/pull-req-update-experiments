@@ -126,7 +126,7 @@ func main() {
 		})
 	}
 
-	filename := "pull-req-no-conflict.txt"
+	filename := "pull-req-update-with-merge.txt"
 	commands = append(commands, &MultiCommands{
 		Comment: "準備: GitHub テキストファイルの作成",
 		Commands: []string{
@@ -138,7 +138,7 @@ func main() {
 		},
 	})
 
-	prBranch := "pr-update-1"
+	prBranch := "pr-update-with-merge"
 	commands = append(commands, &MultiCommands{
 		Comment: "Pull Request作成",
 		Commands: []string{
@@ -167,7 +167,7 @@ func main() {
 		Command: f("gh pr merge %s --merge --delete-branch", prBranch),
 	})
 
-	filename = "pull-req-same-line-conflict.txt"
+	filename = "pull-req-update-with-rebase.txt"
 	commands = append(commands, &MultiCommands{
 		Comment: "準備: GitHub テキストファイルの作成",
 		Commands: []string{
@@ -179,7 +179,7 @@ func main() {
 		},
 	})
 
-	prBranch = "pr-update-2"
+	prBranch = "pr-update-with-rebase"
 	commands = append(commands, &MultiCommands{
 		Comment: "Pull Request作成",
 		Commands: []string{
@@ -196,9 +196,9 @@ func main() {
 		Comment: f("%s ブランチに直接commit", mainBranch),
 		Commands: []string{
 			f(`git switch %s`, mainBranch),
-			f(`sed -i 's/a/aaa/' %s # ファイル中のaをaaaに置き換え`, filename),
+			f(`sed -i 's/b/bbbbb/' %s # ファイル中のbをbbbbbに置き換え`, filename),
 			"git add --all",
-			f(`git commit -m "update a to aaa in %s"`, mainBranch),
+			f(`git commit -m "update b in %s"`, mainBranch),
 			f("git push origin %s", mainBranch),
 		},
 	})
